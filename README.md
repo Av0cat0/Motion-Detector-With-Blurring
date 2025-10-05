@@ -1,6 +1,6 @@
 # Motion Detection Pipeline System
 
-A professional multiprocessing video analysis system that detects motion and applies selective blurring for privacy protection.
+A multiprocessing video analysis system that detects motion and applies selective blurring for privacy protection.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -17,7 +17,7 @@ A professional multiprocessing video analysis system that detects motion and app
 
 ## Overview
 
-This system implements a **3-process pipeline** for real-time video analysis with motion detection and selective blurring. The architecture follows professional software engineering principles with proper separation of concerns, error handling, and performance optimization.
+This system implements a **3-process pipeline** for real-time video analysis with motion detection and selective blurring. The architecture follows software engineering principles with proper separation of concerns, error handling, and performance optimization.
 
 ## Architecture
 
@@ -49,14 +49,6 @@ Video File → Streamer → Detector → Presenter → Display
 
 ## Multiprocessing Design
 
-### Why Multiprocessing?
-
-1. **Parallel Processing**: Each component runs independently
-2. **CPU Utilization**: Leverages multiple CPU cores
-3. **Fault Isolation**: Failure in one process doesn't crash others
-4. **Scalability**: Easy to add more processing steps
-5. **Real-time Performance**: Non-blocking operations
-
 ### Process Architecture
 ```python
 # Each component runs in its own process
@@ -65,17 +57,12 @@ detector_process = mp.Process(target=detector.start)
 presenter_process = mp.Process(target=presenter.start)
 ```
 
-### Benefits
-- **Performance**: 3x faster than single-threaded approach
-- **Reliability**: Isolated failure domains
-- **Maintainability**: Clear separation of responsibilities
-- **Extensibility**: Easy to add new processing stages
 
 ## Inter-Process Communication
 
 ### Communication Method: **Queue-based Messaging**
 
-#### Why We Chose Queues:
+#### Why Queues:
 
 1. **Thread-Safe**: Built-in synchronization
 2. **Efficient**: Optimized for large data (video frames)
@@ -166,11 +153,6 @@ thresh = cv2.threshold(diff, threshold, 255, cv2.THRESH_BINARY)[1]
 - ✅ **Effective**: Good for general motion detection
 - ✅ **Robust**: Works in various lighting conditions
 
-**Alternatives Considered:**
-- **Optical Flow**: ❌ Too complex, slower
-- **Background Subtraction**: ❌ Requires training phase
-- **Deep Learning**: ❌ Overkill for this use case
-
 ### 2. **Blurring Algorithm**
 
 #### **Gaussian Blur** (Chosen)
@@ -187,7 +169,6 @@ blurred_roi = cv2.GaussianBlur(roi, (kernel_size, kernel_size), 0)
 **Alternatives Considered:**
 - **Box Blur**: ❌ Less smooth, blocky appearance
 - **Motion Blur**: ❌ Direction-dependent, complex
-- **Pixelation**: ❌ Too harsh, not privacy-friendly
 
 ### 3. **Selective Blurring Strategy**
 
@@ -201,7 +182,6 @@ for (x, y, w, h) in detections:
 ```
 
 **Benefits:**
-- **10-50x faster** than full-frame blurring
 - **Memory efficient**: Only processes small regions
 - **Privacy-focused**: Only blurs moving objects
 - **Real-time capable**: Maintains video frame rates
@@ -250,7 +230,6 @@ def merge_overlapping_detections(self, detections):
 - **Consistent Blurring**: Objects stay blurred across frames
 - **Reduced Flickering**: Smooth transitions
 - **Better Privacy**: No brief visibility windows
-- **Professional Quality**: Smooth, polished appearance
 
 ### Configuration:
 - **`temporal_history_size = 5`**: Balance between smoothness and responsiveness
@@ -319,52 +298,20 @@ self.temporal_history_size = 5
 ### Benchmarks
 - **Processing Speed**: 15-30 FPS (depending on settings)
 - **Memory Usage**: ~200MB for 1080p video
-- **CPU Usage**: 60-80% on 4-core system
 - **Latency**: <100ms end-to-end
 
 ### Optimization Features
-- **Selective Blurring**: 10-50x faster than full-frame
+- **Selective Blurring**: 10-50x faster
 - **Queue Management**: Prevents memory overflow
 - **Temporal Smoothing**: Reduces processing overhead
 - **Error Recovery**: Maintains pipeline stability
 
 ### System Requirements
-- **CPU**: Multi-core processor (4+ cores recommended)
+- **CPU**: Multi-core processor
 - **RAM**: 2GB+ available memory
 - **Storage**: SSD recommended for video files
-- **OS**: Windows, Linux, macOS
 
 ## Controls
 
-- **Q Key**: Manual exit
 - **Automatic**: System stops when video ends
 - **Error Recovery**: Graceful handling of failures
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Low FPS**:
-   - Reduce `blur_intensity`
-   - Decrease `queue_size`
-   - Lower `temporal_history_size`
-
-2. **Memory Issues**:
-   - Decrease `queue_size`
-   - Close other applications
-   - Use smaller video files
-
-3. **Detection Issues**:
-   - Adjust `detection_threshold`
-   - Modify `min_contour_area`
-   - Check video quality
-
-### Performance Tips
-- Use SSD storage for video files
-- Close unnecessary applications
-- Adjust parameters based on system capabilities
-- Monitor FPS counter for optimization
-
-## License
-
-This project is part of a technical interview assignment demonstrating professional software engineering practices in computer vision and multiprocessing systems.
